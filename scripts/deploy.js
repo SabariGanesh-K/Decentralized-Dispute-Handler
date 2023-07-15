@@ -7,19 +7,29 @@
 const hre = require("hardhat");
 
 async function main() {
-  const 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  let subscriptionId; //chainlink subscription id
+  const consumerContract = await hre.ethers.getContractFactory("VRFv2Consumer");
+  const consumerContractDeploy = await consumerContract.deploy(subscriptionId);
 
-  await lock.deployed();
+  await consumerContractDeploy.deployed();
 
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `VRFv2Consumer contract deployed to ${consumerContractDeploy.address} in sepolia testnet`
+  );
+
+  const disputeHandlerContract = await hre.ethers.getContractFactory(
+    "DisputeHandler"
+  );
+  const disputeHandlerContractDeploy = await disputeHandlerContract.deploy(
+    consumerContractDeploy.address
+  );
+
+  await disputeHandlerContractDeploy.deployed();
+  console.log(
+    `DisputeHandler contract deployed to ${disputeHandlerContractDeploy.address} in sepolia testnet`
   );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

@@ -41,6 +41,7 @@ contract DisputeHandler {
         uint256 votes_for;
         uint256 votes_against;
         uint256 VRFrequestId;
+        uint256 RecieverBuffer;
         uint256 expiring;
         address winner;
     }
@@ -78,6 +79,7 @@ contract DisputeHandler {
             Status.notfulfilled,
             0,
             0,
+            block.timestamp+ 2 days,
             0,
             0,
             address(0)
@@ -94,11 +96,18 @@ contract DisputeHandler {
         participants = participantsNew;
     }
 
+    function counterReplyDispute(uint256 disputeId,string memory recieverDesc) external {
+        require(disputeInfo[disputeId].pointed==msg.sender);
+        require(block.timestamp<disputeInfo[disputeId].RecieverBuffer || (disputeInfo[disputeId].expiring !=0 && block.timestamp<disputeInfo[disputeId].expiring) );
+        disputeInfo[disputeId].RecieverDesc=recieverDesc;
+    }
+
     function verifyFullfillnessAndStartVoting(uint256 disputeId)
         external
         onlyAdmin
     {
         require(disputeInfo[disputeId].status == Status.notfulfilled);
+        require(disputeInfo[disputeId].RecieverBuffer>block.timestamp);
         (bool fulfilled, uint256[] memory randomWords) = consumer
             .getRequestStatus(disputeInfo[disputeId].VRFrequestId);
         require(fulfilled);
@@ -109,7 +118,8 @@ contract DisputeHandler {
             ] = true;
         }
         disputeInfo[disputeId].status = Status.voting;
-        disputeInfo[disputeId].expiring = block.timestamp + 2 days;
+        
+        disputeInfo[disputeId].expiring = block.timestamp + 4 days;
     }
 
     function declareResultForDispute(uint256 disputeId) external {
