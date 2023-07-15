@@ -1,9 +1,11 @@
 # Decentralized Dispute Handler
  EVM based Decentralized Dispute handler with 51% attack prevention using the power of Chainlink VRF technology.
-![image](https://github.com/SabariGanesh-K/Decentralized-Dispute-Handler/assets/64348740/f0b53bcb-8887-40bb-8368-7443b833053b)
+![image](https://github.com/SabariGanesh-K/Decentralized-Dispute-Handler/assets/64348740/9f963347-e77d-437e-952b-23575061b11c)
+
 
 # Sequence Diagram
-![image](https://github.com/SabariGanesh-K/Decentralized-Dispute-Handler/assets/64348740/3dcd06c1-99d5-422b-b6d6-80fdee32c265)
+![image](https://github.com/SabariGanesh-K/Decentralized-Dispute-Handler/assets/64348740/4f8dbf8d-d05c-4d19-b3f2-c38dd183eb67)
+
 
 
 # Setting up Chainlink VRF V2
