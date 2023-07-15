@@ -15,6 +15,7 @@ contract VRFv2Consumer is VRFConsumerBaseV2, ConfirmedOwner {
         bool exists; // whether a requestId exists
         uint256[] randomWords;
     }
+    mapping(address => bool) public isWhitelisted;
     mapping(uint256 => RequestStatus) public s_requests; /* requestId --> requestStatus */
     VRFCoordinatorV2Interface COORDINATOR;
 
@@ -37,8 +38,17 @@ contract VRFv2Consumer is VRFConsumerBaseV2, ConfirmedOwner {
 
     uint32 public numWords = 2;
 
+    function whitelistContract(address contractAddr) external onlyOwner {
+        isWhitelisted[contractAddr] = true;
+    }
+
     function setNumWords(uint32 num) external onlyOwner {
         numWords = num;
+    }
+
+    modifier onlyWhitelisted() {
+        require(isWhitelisted[msg.sender], "Non-Admin access denied");
+        _;
     }
 
     constructor(uint64 subscriptionId)
@@ -49,12 +59,13 @@ contract VRFv2Consumer is VRFConsumerBaseV2, ConfirmedOwner {
             0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625
         );
         s_subscriptionId = subscriptionId;
+        isWhitelisted[msg.sender] = true;
     }
 
     // Assumes the subscription is funded sufficiently.
     function requestRandomWords()
         external
-        onlyOwner
+        onlyWhitelisted
         returns (uint256 requestId)
     {
         // Will revert if subscription is not set and funded.
